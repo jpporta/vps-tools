@@ -1,0 +1,4 @@
+$ bun src/index.ts
+🦊 Elysia is running at localhost:3000
+$ bun src/index.ts
+🦊 Elysia is running at localhost:80
