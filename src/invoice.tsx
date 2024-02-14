@@ -1,19 +1,24 @@
 import { Elysia } from "elysia";
 import { html } from "@elysiajs/html";
 import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 
 const Invoice = ({
   invoiceNumber,
   currentDate,
   dueDate,
   dueBalance,
-  days,
+  hours,
+  rate,
+  detailed,
 }: {
   invoiceNumber: string;
   currentDate: string;
   dueDate: string;
   dueBalance: string;
-  days: string;
+  hours: number;
+  rate: number;
+  detailed: { day: string; total: string }[];
 }) => (
   <html>
     <head>
@@ -80,6 +85,16 @@ text-align: right;
 .gray-bg {
 background-color: #eee;
 }
+
+th, td {
+padding: 0.5rem;
+}
+
+tbody > tr:nth-child(even) {
+background-color: #f2f2f2;
+}
+
+
 `}
     </style>
 
@@ -139,7 +154,7 @@ background-color: #eee;
               <td style="padding: 0.5rem 1rem;border: none;">
                 <p class="bold">Summary:</p>
                 <p style="color: #666">
-                  {days} days * 8 hours * US$50/hour = {dueBalance}
+                  {hours} hours * US${rate}/hour = {dueBalance}
                 </p>
               </td>
               <td style="padding: 0.5rem 1rem;border: none;">1</td>
@@ -163,39 +178,60 @@ background-color: #eee;
           </div>
         </div>
       </main>
-      <footer>
-        <p style="color: #666; margin-bottom: 0.5rem">Notes:</p>
-        <div style="margin-bottom: 1rem;">
-          <p>Benificiary</p>
-          <p>JOAO PEDRO PIN PORTA 40174460864</p>
+      <footer style="display:flex; justify-content: space-between">
+        <div>
+          <p style="color: #666; margin-bottom: 0.5rem">Notes:</p>
+          <div style="margin-bottom: 1rem;">
+            <p>Benificiary</p>
+            <p>JOAO PEDRO PIN PORTA 40174460864</p>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <p>Address</p>
+            <p>Campinas, Brazil</p>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <p>IBAN</p>
+            <p>JOAO PEDRO PIN PORTA 40174460864</p>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <p>Benificiary</p>
+            <p>BR1178632767000010005264481C1</p>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <p>SWIFT Code</p>
+            <p>OURIBRSPXXX</p>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <p>Branch Code</p>
+            <p>00001</p>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <p>Bank Name</p>
+            <p>BANCO OURINVEST S.A</p>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <p>Bank Address</p>
+            <p>Sao Paulo, Brazil</p>
+          </div>
         </div>
-        <div style="margin-bottom: 1rem;">
-          <p>Address</p>
-          <p>Campinas, Brazil</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <p>IBAN</p>
-          <p>JOAO PEDRO PIN PORTA 40174460864</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <p>Benificiary</p>
-          <p>BR1178632767000010005264481C1</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <p>SWIFT Code</p>
-          <p>OURIBRSPXXX</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <p>Branch Code</p>
-          <p>00001</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <p>Bank Name</p>
-          <p>BANCO OURINVEST S.A</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <p>Bank Address</p>
-          <p>Sao Paulo, Brazil</p>
+        <div>
+          <div style="height: 4rem" />
+          <table style="margin-right: 1rem; width: 20">
+            <thead style="background-color: #444; color: white;">
+              <tr style="text-align: left">
+                <th>Date</th>
+                <th>Worked Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              {detailed.map((day) => (
+                <tr>
+                  <td>{day.day}</td>
+                  <td>{day.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </footer>
     </body>
@@ -203,19 +239,41 @@ background-color: #eee;
 );
 export const invoicePlugin = new Elysia({ prefix: "/invoice" })
   .use(html())
-  .get("/", ({ query: { days, rate } }) =>
-    days && rate ? (
-      <Invoice
-        invoiceNumber={dayjs(new Date()).format("YYYYMMDD")}
-        currentDate={dayjs(new Date()).format("MMM DD, YYYY")}
-        dueDate={dayjs(new Date()).add(15, "days").format("MMM DD, YYYY")}
-        dueBalance={(Number(days) * 8 * Number(rate)).toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        })}
-        days={days.toString()}
-      />
-    ) : (
-      <p>Missing info</p>
-    )
-  );
+  .get("/", async ({ query: { days, rate = 50 } }) => {
+    let hours;
+    dayjs.extend(duration);
+    const currentDate = dayjs(new Date()).format("MMM DD, YYYY");
+    const dueDate = dayjs(new Date()).add(15, "days").format("MMM DD, YYYY");
+    let detailed: { Date: string; Total: number }[] = [];
+    if (days) {
+      hours = Number(days) * 8;
+    } else {
+      const totalResp = await fetch(Bun.env.TIMETRACKER_URL + "/invoice/total");
+      const { Total, Detailed } = (await totalResp.json()) as {
+        Total: number;
+        Start: string;
+        End: string;
+        Detailed: { Date: string; Total: number }[];
+      };
+      hours = Total;
+      detailed = Detailed;
+    }
+
+    const data = {
+      invoiceNumber: dayjs(new Date()).format("YYYYMMDD"),
+      currentDate,
+      dueDate,
+      dueBalance: (hours * Number(rate)).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      }),
+      hours,
+      rate: Number(rate) || 50,
+      detailed: detailed.map((day) => ({
+        day: dayjs(new Date(day.Date)).format("MMM DD, YYYY"),
+        total: dayjs.duration(day.Total, "hours").format("HH[h]mm[m]"),
+      })),
+    };
+
+    return <Invoice {...data} />;
+  });
