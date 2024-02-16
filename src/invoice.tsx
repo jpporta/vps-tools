@@ -259,6 +259,7 @@ export const invoicePlugin = new Elysia({ prefix: "/invoice" })
       detailed = Detailed;
     }
 
+    console.log(detailed.map((d) => d.Date.split("T")[0]));
     const data = {
       invoiceNumber: dayjs(new Date()).format("YYYYMMDD"),
       currentDate,
@@ -270,7 +271,7 @@ export const invoicePlugin = new Elysia({ prefix: "/invoice" })
       hours,
       rate: Number(rate) || 50,
       detailed: detailed.map((day) => ({
-        day: dayjs(new Date(day.Date)).format("MMM DD, YYYY"),
+        day: dayjs(day.Date.split("T")[0]).format("MMM DD, YYYY"),
         total: dayjs.duration(day.Total, "hours").format("HH[h]mm[m]"),
       })),
     };
