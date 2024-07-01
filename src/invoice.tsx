@@ -239,7 +239,7 @@ background-color: #f2f2f2;
 );
 export const invoicePlugin = new Elysia({ prefix: "/invoice" })
   .use(html())
-  .get("/", async ({ query: { days, rate = 50 } }) => {
+  .get("/", async ({ query: { days, rate = 62.5, offset = 0 } }) => {
     let hours;
     dayjs.extend(duration);
     const currentDate = dayjs(new Date()).format("MMM DD, YYYY");
@@ -248,7 +248,9 @@ export const invoicePlugin = new Elysia({ prefix: "/invoice" })
     if (days) {
       hours = Number(days) * 8;
     } else {
-      const totalResp = await fetch(Bun.env.TIMETRACKER_URL + "/invoice/total");
+      const totalResp = await fetch(
+        Bun.env.TIMETRACKER_URL + `/invoice/total?offset=${offset}`,
+      );
       const { Total, Detailed } = (await totalResp.json()) as {
         Total: number;
         Start: string;
