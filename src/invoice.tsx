@@ -27,7 +27,7 @@ const Invoice = ({
     <style>
       {`
     @page {
-	size: A4;
+	size: legal;
 
     }
 * {
@@ -39,6 +39,9 @@ body {
 font-family: Arial, Helvetica, sans-serif;
 -webkit-print-color-adjust:exact !important;
   print-color-adjust:exact !important;
+width: 8.5in;
+height: 14in;
+padding: 0.25in;
 }
 .bold {
 	font-weight: bold;
@@ -90,7 +93,7 @@ th, td {
 padding: 0.5rem;
 }
 
-tbody > tr:nth-child(even) {
+tbody.colored > tr:nth-child(even) {
 background-color: #f2f2f2;
 }
 
@@ -151,89 +154,102 @@ background-color: #f2f2f2;
           </thead>
           <tbody>
             <tr>
-              <td style="padding: 0.5rem 1rem;border: none;">
+              <td>
                 <p class="bold">Summary:</p>
                 <p style="color: #666">
                   {hours} hours * US${rate}/hour = {dueBalance}
                 </p>
               </td>
-              <td style="padding: 0.5rem 1rem;border: none;">1</td>
-              <td style="padding: 0.5rem 1rem;border: none;">{dueBalance}</td>
-              <td style="padding: 0.5rem 1rem;border: none;">{dueBalance}</td>
+              <td>1</td>
+              <td>{dueBalance}</td>
+              <td>{dueBalance}</td>
             </tr>
+            <tr>
+              <td />
+              <td />
+              <td>
+                <p>Subtotal:</p>
+              </td>
+              <td>
+                <p style="min-width: 8rem;">{dueBalance}</p>
+              </td>
+            </tr>
+            <tr>
+              <td />
+              <td />
+              <td>
+                <p>Tax:</p>
+              </td>
+              <td>
+                <p style="min-width: 8rem;">US$ 0,00</p>
+              </td>
+            </tr>
+            <tr>
+              <td />
+              <td />
+              <td>
+                <p>Total:</p>
+              </td>
+              <td>
+                <p style="min-width: 8rem;">{dueBalance}</p>
+              </td>
+            </tr>
+            <tr style="height:0.5rem" />
+            <tr>
+              <td colspan="2" rowspan={detailed.length + 1}>
+                <div>
+                  <p style="color: #666; margin-bottom: 0.75rem">Notes:</p>
+                  <div style="margin-bottom: 1rem;">
+                    <p>Benificiary</p>
+                    <p>JOAO PEDRO PIN PORTA 40174460864</p>
+                  </div>
+                  <div style="margin-bottom: 1rem;">
+                    <p>Address</p>
+                    <p>Campinas, Brazil</p>
+                  </div>
+                  <div style="margin-bottom: 1rem;">
+                    <p>IBAN</p>
+                    <p>JOAO PEDRO PIN PORTA 40174460864</p>
+                  </div>
+                  <div style="margin-bottom: 1rem;">
+                    <p>Benificiary</p>
+                    <p>BR1178632767000010005264481C1</p>
+                  </div>
+                  <div style="margin-bottom: 1rem;">
+                    <p>SWIFT Code</p>
+                    <p>OURIBRSPXXX</p>
+                  </div>
+                  <div style="margin-bottom: 1rem;">
+                    <p>Branch Code</p>
+                    <p>00001</p>
+                  </div>
+                  <div style="margin-bottom: 1rem;">
+                    <p>Bank Name</p>
+                    <p>BANCO OURINVEST S.A</p>
+                  </div>
+                  <div style="margin-bottom: 1rem;">
+                    <p>Bank Address</p>
+                    <p>Sao Paulo, Brazil</p>
+                  </div>
+                </div>
+              </td>
+              <td style="background-color: #444; color: white;">
+                <span>Date</span>
+              </td>
+              <td style="background-color: #444; color: white;">
+                <span>Worked Hours</span>
+              </td>
+            </tr>
+
+            {detailed.map((day, idx) => (
+              <tr style={idx % 2 ? "background-color: #f2f2f2" : ""}>
+                <td>{day.day}</td>
+                <td>{day.total}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
-        <div class="balance" style="margin-left: auto; margin-top: 2rem;">
-          <div class="row">
-            <p>Subtotal:</p>
-            <p style="min-width: 8rem;">{dueBalance}</p>
-          </div>
-          <div class="row">
-            <p>Tax:</p>
-            <p style="min-width: 8rem;">US$ 0,00</p>
-          </div>
-          <div class="row">
-            <p>Total:</p>
-            <p style="min-width: 8rem;">{dueBalance}</p>
-          </div>
-        </div>
       </main>
-      <footer style="display:flex; justify-content: space-between">
-        <div>
-          <p style="color: #666; margin-bottom: 0.5rem">Notes:</p>
-          <div style="margin-bottom: 1rem;">
-            <p>Benificiary</p>
-            <p>JOAO PEDRO PIN PORTA 40174460864</p>
-          </div>
-          <div style="margin-bottom: 1rem;">
-            <p>Address</p>
-            <p>Campinas, Brazil</p>
-          </div>
-          <div style="margin-bottom: 1rem;">
-            <p>IBAN</p>
-            <p>JOAO PEDRO PIN PORTA 40174460864</p>
-          </div>
-          <div style="margin-bottom: 1rem;">
-            <p>Benificiary</p>
-            <p>BR1178632767000010005264481C1</p>
-          </div>
-          <div style="margin-bottom: 1rem;">
-            <p>SWIFT Code</p>
-            <p>OURIBRSPXXX</p>
-          </div>
-          <div style="margin-bottom: 1rem;">
-            <p>Branch Code</p>
-            <p>00001</p>
-          </div>
-          <div style="margin-bottom: 1rem;">
-            <p>Bank Name</p>
-            <p>BANCO OURINVEST S.A</p>
-          </div>
-          <div style="margin-bottom: 1rem;">
-            <p>Bank Address</p>
-            <p>Sao Paulo, Brazil</p>
-          </div>
-        </div>
-        <div>
-          <div style="height: 4rem" />
-          <table style="margin-right: 1rem; width: 20">
-            <thead style="background-color: #444; color: white;">
-              <tr style="text-align: left">
-                <th>Date</th>
-                <th>Worked Hours</th>
-              </tr>
-            </thead>
-            <tbody>
-              {detailed.map((day) => (
-                <tr>
-                  <td>{day.day}</td>
-                  <td>{day.total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </footer>
     </body>
   </html>
 );
