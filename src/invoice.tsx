@@ -196,9 +196,19 @@ background-color: #f2f2f2;
             </tr>
             <tr style="height:0.5rem" />
             <tr>
+              <td colspan="2" style="vertical-align: bottom">
+                <p style="color: #666;">Notes:</p>
+              </td>
+              <td style="background-color: #444; color: white">
+                <span>Date</span>
+              </td>
+              <td style="background-color: #444; color: white">
+                <span>Worked Hours</span>
+              </td>
+            </tr>
+            <tr>
               <td colspan="2" rowspan={detailed.length + 1}>
                 <div>
-                  <p style="color: #666; margin-bottom: 0.75rem">Notes:</p>
                   <div style="margin-bottom: 1rem;">
                     <p>Benificiary</p>
                     <p>JOAO PEDRO PIN PORTA 40174460864</p>
@@ -233,16 +243,16 @@ background-color: #f2f2f2;
                   </div>
                 </div>
               </td>
-              <td style="background-color: #444; color: white;">
-                <span>Date</span>
-              </td>
-              <td style="background-color: #444; color: white;">
-                <span>Worked Hours</span>
-              </td>
             </tr>
 
             {detailed.map((day, idx) => (
-              <tr style={idx % 2 ? "background-color: #f2f2f2" : ""}>
+              <tr
+                style={`vertical-align: top; ${idx !== detailed.length - 1 ? "height: 2rem; " : ""}${
+                  (idx % 2) - (detailed.length % 2) === 0
+                    ? "background-color: #f2f2f2"
+                    : ""
+                }`}
+              >
                 <td>{day.day}</td>
                 <td>{day.total}</td>
               </tr>
