@@ -5,12 +5,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
     "start": "bun src/index.ts",
-    "build": "bun build --target=bun ./src/index.ts --outfile=index.js"      
+    "build": "bun build --target=bun ./src/index.ts --outfile=index.js"
   },
   "dependencies": {
     "@elysiajs/html": "^0.7.3",
-    "dayjs": "^1.11.10",
-    "elysia": "latest"
+    "@elysiajs/static": "^1.4.0",
+    "dayjs": "^1.11.18",
+    "elysia": "^1.4.7"
   },
   "devDependencies": {
     "bun-types": "latest"

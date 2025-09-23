@@ -1,0 +1,93 @@
+@page {
+  size: legal;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  width: 8.5in;
+  height: 14in;
+  padding: 0.25in;
+}
+.bold {
+  font-weight: bold;
+}
+.title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4rem;
+}
+h4 {
+  margin-bottom: 1rem;
+}
+
+hgroup {
+  text-align: right;
+  padding-right: 1rem;
+  margin-bottom: 2rem;
+}
+h1 {
+  font-size: 3rem;
+}
+hgroup > h2 {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+.myInfo,
+.billTo {
+  margin-top: 0.5rem;
+}
+.billTo > span,
+.myInfo > span {
+  color: #666;
+}
+.balance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 30 %;
+}
+.balance > div {
+  display: flex;
+  justify-content: end;
+  gap: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+}
+.balance p {
+  text-align: right;
+}
+.gray-bg {
+  background-color: #eee;
+}
+td {
+  padding: 0.5rem;
+}
+tbody tr:nth-child(odd) {
+  background-color: #ccc;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+footer {
+  margin-top: 1rem;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+}
+h3 {
+  margin: 0.5rem 0;
+}
