@@ -91,3 +91,11 @@ footer {
 h3 {
   margin: 0.5rem 0;
 }
+
+tbody  tr  td:last-child {
+		padding: 0.5rem 1.5rem 0.5rem 0.825rem;
+}
+
+html {
+		background-color: #fff;
+}

@@ -99,34 +99,45 @@ const Invoice = ({
                 <td style="font-style: italic">Worked on AvodahMed</td>
                 <td>{total}</td>
                 <td>US$ {rate} / hr</td>
-                <td>US$ {Number(hours * rate).toFixed(2)}</td>
+                <td style="text-align:right;">
+                  US$ {Number(hours * rate).toFixed(2)}
+                </td>
               </tr>
             ))}
             <tr>
               <td colspan="2" style="text-align: right">
                 Hours Subtotal
               </td>
-              <td>{hours}h</td>
+              <td>
+                {(() => {
+                  const durationH = dayjs.duration(Math.trunc(hours), "hours");
+                  const durationM = dayjs.duration(
+                    Math.trunc((hours - Math.trunc(hours)) * 60),
+                    "minutes",
+                  );
+                  return `${durationH.asHours()}h${durationM.asMinutes()}m`;
+                })()}
+              </td>
               <td>US$ {rate} / hr</td>
-              <td>US$ {Number(hours * rate).toFixed(2)}</td>
+              <td style="text-align:right">{dueBalance}</td>
             </tr>
             <tr>
               <td colspan="4" style="text-align: right">
                 Subtotal:
               </td>
-              <td>US$ {dueBalance}</td>
+              <td style="text-align:right">{dueBalance}</td>
             </tr>
             <tr>
               <td colspan="4" style="text-align: right">
                 Tax:
               </td>
-              <td>US$ 0,00</td>
+              <td style="text-align:right">US$ 0.00</td>
             </tr>
             <tr>
               <td colspan="4" style="text-align: right">
                 Total:
               </td>
-              <td>{dueBalance}</td>
+              <td style="text-align:right">{dueBalance}</td>
             </tr>
           </tbody>
         </table>
@@ -209,6 +220,7 @@ export const invoicePlugin = new Elysia({ prefix: "/invoice" })
       const totalResp = await fetch(
         Bun.env.TIMETRACKER_URL + `/invoice/total?offset=${offset}`,
       );
+      console.log(totalResp);
       const { Total, Detailed } = (await totalResp.json()) as {
         Total: number;
         Start: string;
@@ -223,15 +235,20 @@ export const invoicePlugin = new Elysia({ prefix: "/invoice" })
     }
 
     console.log(detailed.map((d) => d.Date.split("T")[0]));
+    const summedHours = detailed.reduce((acc, cur) => acc + cur.Total, 0);
+    const summedValue = summedHours * Number(rate);
+    console.log(summedHours);
     const data = {
       invoiceNumber: dayjs(new Date()).format("YYYYMMDD"),
       currentDate,
       dueDate,
-      dueBalance: (hours * Number(rate)).toLocaleString("en-US", {
-        style: "currency",
+      dueBalance: `US$ ${summedValue.toLocaleString("en-US", {
+        style: "decimal",
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
         currency: "USD",
-      }),
-      hours,
+      })}`,
+      hours: summedHours,
       rate: Number(rate) || 50,
       detailed: detailed.map((day) => ({
         day: dayjs(day.Date.split("T")[0]).format("MMM DD, YYYY"),

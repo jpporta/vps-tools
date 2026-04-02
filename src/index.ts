@@ -5,7 +5,7 @@ import { staticPlugin } from "@elysiajs/static";
 const app = new Elysia()
   .use(invoicePlugin)
   .use(staticPlugin())
-  .get("/", () => "Hello Elysia")
+  .get("/", ({redirect}) => redirect('/invoice'))
   .listen(Bun.env.PORT || 3000);
 
 console.log(
